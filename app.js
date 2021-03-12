@@ -69,6 +69,27 @@ router.post("/user/register", async (req, res) => {
   }
 });
 
+router.post("/user/login/:username/:password", async (req, res) => {
+  try {
+    let username = req.params.username;
+    let password = req.params.password;
+    const user = await Register.findOne({ userName: username });
+    if (!user) {
+      throw "user not found";
+    }
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (validPassword) {
+      res.send(user.id);
+    } else {
+      throw "not a valid password";
+    }
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
+  }
+});
+
 app.use(bodyParser.json());
 app.use(router);
 app.listen(3000, () => {
