@@ -3,7 +3,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
+const randomString = require("crypto-random-string");
 const Register = require("./models/userRegistraion");
+const AccessToken = require("./models/accessToken");
 
 const router = express.Router();
 const app = express();
@@ -78,11 +80,29 @@ router.post("/user/login/:username/:password", async (req, res) => {
       throw "user not found";
     }
     const validPassword = await bcrypt.compare(password, user.password);
-    if (validPassword) {
-      res.send(user.id);
-    } else {
+    if (!validPassword) {
       throw "not a valid password";
     }
+    const userToken = await AccessToken.findOne({ userId: user._id });
+    console.log(userToken);
+    if (!userToken) {
+      let accessToken = randomString({ length: 20, type: "base64" });
+      let accessTokenData = {
+        userId: user._id,
+        accessToken: accessToken,
+      };
+      let tokendata = new AccessToken(accessTokenData);
+      await tokendata.save();
+    } else {
+      const expiryTime = userToken.expiry;
+      const currentTime = Date.now();
+      if (currentTime > expiryTime) {
+        console.log("expiry");
+        await AccessToken.findOneAndDelete({ _id: userToken._id });
+        throw "session ends again login";
+      }
+    }
+    res.send(user.id);
   } catch (error) {
     res.status(500).send({
       error: error,
