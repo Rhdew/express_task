@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const Register = require("./models/userRegistraion");
 const bodyParser = require("body-parser");
+const Register = require("./models/userRegistraion");
 
 const router = express.Router();
 const app = express();
@@ -103,10 +103,22 @@ router.get("/user/get", verifyToken, async (req, res) => {
 
 router.put("/user/delete", verifyToken, async (req, res) => {
   try {
-       await Register.findOneAndDelete({
+    await Register.findOneAndDelete({
       _id: req.headers.token,
     });
     res.send("user succesfully deleted");
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
+  }
+});
+
+router.get("/user/list/:page", async (req, res) => {
+  try {
+    let skip = req.params.page * 10;
+    const userList = await Register.find().skip(skip).limit(10);
+    res.send(userList);
   } catch (error) {
     res.status(500).send({
       error: error,
