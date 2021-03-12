@@ -101,6 +101,19 @@ router.get("/user/get", verifyToken, async (req, res) => {
   }
 });
 
+router.put("/user/delete", verifyToken, async (req, res) => {
+  try {
+       await Register.findOneAndDelete({
+      _id: req.headers.token,
+    });
+    res.send("user succesfully deleted");
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
+  }
+});
+
 async function verifyToken(req, res, next) {
   try {
     const findUser = await Register.findOne({ _id: req.headers.token });
