@@ -90,6 +90,32 @@ router.post("/user/login/:username/:password", async (req, res) => {
   }
 });
 
+router.get("/user/get", verifyToken, async (req, res) => {
+  try {
+    const validatedUser = await Register.findOne({ _id: req.headers.token });
+    res.send(validatedUser);
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
+  }
+});
+
+async function verifyToken(req, res, next) {
+  try {
+    const findUser = await Register.findOne({ _id: req.headers.token });
+    console.log(findUser);
+    if (!findUser) {
+      throw "invalid token";
+    }
+    next();
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
+  }
+}
+
 app.use(bodyParser.json());
 app.use(router);
 app.listen(3000, () => {
