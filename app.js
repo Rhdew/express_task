@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -7,7 +8,6 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 const app = express();
 
-require("dotenv").config();
 mongoose
   .connect(process.env.DATABASE_URI, {
     useNewUrlParser: true,
@@ -27,14 +27,17 @@ mongoose
   });
 
 router.post("/user/register", async (req, res) => {
+  console.log(req);
   console.log(req.body);
   try {
-    let firstName = req.body.firstName;
-    let secondName = req.body.secondName;
-    let userName = req.body.userName;
-    let password = req.body.password;
-    let confirmPassword = req.body.confirmPassword;
-    let email = req.body.email;
+    let {
+      firstName,
+      secondName,
+      userName,
+      password,
+      confirmPassword,
+      email,
+    } = req.body;
     let validatedPassword;
     if (password === confirmPassword) {
       validatedPassword = await bcrypt.hash(password, 10);
@@ -63,7 +66,7 @@ router.post("/user/register", async (req, res) => {
     res.status(500).send({
       error: error,
     });
-  }                                              
+  }
 });
 
 app.use(bodyParser.json());

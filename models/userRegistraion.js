@@ -16,9 +16,6 @@ const userRegistrationSchema = mongoose.Schema({
   password: {
     type: String,
   },
-  confirmPassword: {
-    type: String,
-  },
   email: {
     type: String,
     required: true,
