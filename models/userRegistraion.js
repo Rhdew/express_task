@@ -15,6 +15,7 @@ const userRegistrationSchema = mongoose.Schema({
   },
   password: {
     type: String,
+    required:true,
   },
   email: {
     type: String,
@@ -27,6 +28,10 @@ const userRegistrationSchema = mongoose.Schema({
       message: "{VALUE} is not a valid email!",
     },
   },
+  address: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'address'
+  }]
 });
 
 module.exports = mongoose.model("register", userRegistrationSchema);

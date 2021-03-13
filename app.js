@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const randomString = require("crypto-random-string");
 const Register = require("./models/userRegistraion");
 const AccessToken = require("./models/accessToken");
+const Address = require("./models/address");
 
 const router = express.Router();
 const app = express();
@@ -20,12 +21,13 @@ mongoose
     bufferMaxEntries: 0,
     autoIndex: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("Link established to database");
   })
-  .catch(() => {
-    console.log("No link to database.");
+  .catch((err) => {
+    console.log("No link to database.", err);
   });
 
 router.post("/user/register", async (req, res) => {
@@ -84,7 +86,6 @@ router.post("/user/login/:username/:password", async (req, res) => {
       throw "not a valid password";
     }
     const userToken = await AccessToken.findOne({ userId: user._id });
-    console.log(userToken);
     if (!userToken) {
       let accessToken = randomString({ length: 20, type: "base64" });
       let accessTokenData = {
@@ -94,10 +95,9 @@ router.post("/user/login/:username/:password", async (req, res) => {
       let tokendata = new AccessToken(accessTokenData);
       await tokendata.save();
     } else {
-      const expiryTime = userToken.expiry;
+      const expiryTime = new Date(userToken.expiry).valueOf();
       const currentTime = Date.now();
       if (currentTime > expiryTime) {
-        console.log("expiry");
         await AccessToken.findOneAndDelete({ _id: userToken._id });
         throw "session ends again login";
       }
@@ -134,11 +134,36 @@ router.put("/user/delete", verifyToken, async (req, res) => {
   }
 });
 
-router.get("/user/list/:page", async (req, res) => {
+router.get("/user/list/:page", verifyToken, async (req, res) => {
   try {
     let skip = req.params.page * 10;
     const userList = await Register.find().skip(skip).limit(10);
     res.send(userList);
+  } catch (error) {
+    res.status(500).send({
+      error: error,
+    });
+  }
+});
+
+router.post("/user/address", verifyToken, async (req, res) => {
+  try {
+    let { address, city, state, pinCode, phone } = req.body;
+    let userId = req.headers.token;
+    let userAddress = {
+      userId: userId,
+      address: address,
+      city: city,
+      state: state,
+      pinCode: pinCode,
+      phone: phone,
+    };
+    const userAddressData = new Address(userAddress);
+    const addressData = await userAddressData.save();
+    await Register.findOneAndUpdate(addressData.userId, {
+      $push: { address: addressData._id },
+    });
+    res.send("address successfully saved");
   } catch (error) {
     res.status(500).send({
       error: error,
