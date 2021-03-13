@@ -110,10 +110,13 @@ router.post("/user/login/:username/:password", async (req, res) => {
   }
 });
 
-router.get("/user/get", verifyToken, async (req, res) => {
+router.get("/user/get/:id", verifyToken, async (req, res) => {
   try {
-    const validatedUser = await Register.findOne({ _id: req.headers.token });
-    res.send(validatedUser);
+    await Register.findOne({ _id: req.params.id })
+      .populate("addresses")
+      .then((user) => {
+        res.json(user);
+      });
   } catch (error) {
     res.status(500).send({
       error: error,
@@ -160,9 +163,11 @@ router.post("/user/address", verifyToken, async (req, res) => {
     };
     const userAddressData = new Address(userAddress);
     const addressData = await userAddressData.save();
-    await Register.findOneAndUpdate(addressData.userId, {
-      $push: { address: addressData._id },
-    });
+    await Register.findOneAndUpdate(
+      { _id: addressData.userId },
+      { $push: { addresses: addressData._id } },
+      { new: true }
+    );
     res.send("address successfully saved");
   } catch (error) {
     res.status(500).send({

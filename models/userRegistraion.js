@@ -28,9 +28,9 @@ const userRegistrationSchema = mongoose.Schema({
       message: "{VALUE} is not a valid email!",
     },
   },
-  address: [{
+  addresses: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref:'address'
+    ref:'Address'
   }]
 });
 
