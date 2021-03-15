@@ -1,5 +1,5 @@
 require("dotenv").config();
-const User = require("../models/userRegistraion");
+const User = require("../models/userRegistration");
 const bcrypt = require("bcrypt");
 
 const userRegister = async (req, res) => {

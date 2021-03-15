@@ -1,4 +1,4 @@
-const User = require("../models/userRegistraion");
+const User = require("../models/userRegistration");
 const Address = require("../models/address");
 
 const saveUserAddress = async (req, res) => {

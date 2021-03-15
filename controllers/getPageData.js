@@ -1,4 +1,4 @@
-const User = require("../models/userRegistraion");
+const User = require("../models/userRegistration");
 
 const getPageData = async (req, res) => {
   try {

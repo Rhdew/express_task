@@ -1,4 +1,4 @@
-const User = require("../models/userRegistraion");
+const User = require("../models/userRegistration");
 const AccessToken = require("../models/accessToken");
 const bcrypt = require("bcrypt");
 
