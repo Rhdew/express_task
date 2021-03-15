@@ -9,7 +9,7 @@ const accessTokenSchema = mongoose.Schema({
   },
   expiry: {
     type: Date,
-    default: () => Date.now() + 60 * 60 * 1000,
+    default: () => Date.now() + 60  * 5000,
   },
 });
 
