@@ -1,3 +1,5 @@
+const AccessToken = require("./models/accessToken");
+
 const verifyToken = async function verifyToken(req, res, next) {
   try {
     const token = await AccessToken.findOne({ accessToken: req.headers.token });

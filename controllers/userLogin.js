@@ -14,9 +14,8 @@ const userLogin = async (req, res) => {
     if (!validPassword) {
       throw "not a valid password";
     }
-
+    let accessToken;
     const userToken = await AccessToken.findOne({ userId: user._id });
-    var accessToken = userToken.accessToken;
     if (!userToken) {
       accessToken = getRandomInt(10);
       let accessTokenData = {
@@ -25,7 +24,7 @@ const userLogin = async (req, res) => {
       };
       let tokendata = new AccessToken(accessTokenData);
       await tokendata.save();
-    }
+    } else accessToken = userToken.accessToken;
     res.json({
       error: 0,
       message: "successfully login",

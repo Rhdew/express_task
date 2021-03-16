@@ -2,6 +2,7 @@ const User = require("../models/userRegistration");
 
 const getAllData = async (req, res) => {
   try {
+    console.log(req.params.id);
     User.findOne({ _id: req.params.id })
       .populate("addresses")
       .then((user) => {

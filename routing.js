@@ -14,8 +14,8 @@ const {
 router.post("/register", userRegister);
 router.post("/login", userLogin);
 router.post("/address", verifyToken, saveUserAddress);
-router.post("/page", verifyToken, getPageData);
-router.post("/get", verifyToken, getAllData);
+router.post("/page/:page", verifyToken, getPageData);
+router.post("/get/:id", verifyToken, getAllData);
 router.post("/delete", verifyToken, deleteUser);
 
 module.exports = router
