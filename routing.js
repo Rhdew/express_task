@@ -9,7 +9,7 @@ const {
   getPageData,
   getAllData,
   deleteUser,
-} = require("./controllers/index");
+} = require("./controllers/User");
 
 router.post("/register", userRegister);
 router.post("/login", userLogin);
@@ -18,4 +18,4 @@ router.post("/page/:page", verifyToken, getPageData);
 router.post("/get/:id", verifyToken, getAllData);
 router.post("/delete", verifyToken, deleteUser);
 
-module.exports = router
+module.exports = router;
